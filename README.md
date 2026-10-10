@@ -60,7 +60,7 @@ you open.
 
 ## Make it yours
 
-Click **Settings** on the new tab.
+Click the gear icon in the bottom-right corner of the new tab.
 
 **Instructions.** Anything you write here goes into every build and takes priority
 over the agent's own defaults. This box sets both the content and the look:
@@ -89,7 +89,7 @@ interval you pick (6, 12, 24 or 48 hours), the extension rebuilds it quietly in 
 background. It only starts after you've built once by hand, and it won't retry a
 failed build until the next interval, so it never loops.
 
-**Rebuild** in the top-right corner rebuilds right away.
+The rebuild icon next to it rebuilds right away.
 
 ## Good to know
 

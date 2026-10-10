@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Banner, Button } from "@cloudflare/kumo";
+import { Banner, Button, Tooltip, TooltipProvider } from "@cloudflare/kumo";
 import { ArrowsClockwiseIcon, GearSixIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
 import { DEFAULT_MODEL, type HomepageModel } from "@homepage/agent-core";
 import { DEFAULT_REBUILD_INTERVAL_HOURS } from "@/lib/auto-rebuild";
@@ -133,41 +133,56 @@ export default function App() {
   }
 
   const showError = state.error && dismissedError !== state.error;
+  const buildingLabel = `Building ${Math.min(state.stepIndex + 1, BUILD_STEPS.length)}/${BUILD_STEPS.length}`;
 
   return (
     <div className="h-dvh w-screen">
-      <div className="fixed top-5 right-5 z-10 flex gap-2">
-        {state.running ? (
-          // A build is running in the background (from here, another tab, or the
-          // scheduled rebuild). Let the user watch it without losing this page.
-          <Button
-            variant="primary"
-            className="shadow-md"
-            onClick={() => setViewProgress(true)}
-            title="View build progress"
-          >
-            <span className="size-2 animate-pulse rounded-full bg-current" />
-            Building… {Math.min(state.stepIndex + 1, BUILD_STEPS.length)}/{BUILD_STEPS.length}
-          </Button>
-        ) : (
-          <Button
-            className="shadow-md"
-            icon={<ArrowsClockwiseIcon />}
-            onClick={() => build()}
-            title="Rebuild now"
-          >
-            Rebuild
-          </Button>
-        )}
-        <Button
-          className="shadow-md"
-          icon={<GearSixIcon />}
-          onClick={() => setShowSettings(true)}
-          title="Customize homepage"
-        >
-          Settings
-        </Button>
-      </div>
+      <TooltipProvider>
+        <div className="fixed right-4 bottom-4 z-10 flex gap-1 opacity-60 transition-opacity focus-within:opacity-100 hover:opacity-100">
+          {state.running ? (
+            // A build is running in the background (from here, another tab, or the
+            // scheduled rebuild). Let the user watch it without losing this page.
+            <Tooltip
+              content={`${buildingLabel}. View progress`}
+              render={
+                <Button
+                  variant="primary"
+                  size="sm"
+                  shape="square"
+                  icon={<ArrowsClockwiseIcon className="animate-spin" />}
+                  aria-label={`${buildingLabel}. View progress`}
+                  onClick={() => setViewProgress(true)}
+                />
+              }
+            />
+          ) : (
+            <Tooltip
+              content="Rebuild"
+              render={
+                <Button
+                  size="sm"
+                  shape="square"
+                  icon={<ArrowsClockwiseIcon />}
+                  aria-label="Rebuild"
+                  onClick={() => build()}
+                />
+              }
+            />
+          )}
+          <Tooltip
+            content="Settings"
+            render={
+              <Button
+                size="sm"
+                shape="square"
+                icon={<GearSixIcon />}
+                aria-label="Settings"
+                onClick={() => setShowSettings(true)}
+              />
+            }
+          />
+        </div>
+      </TooltipProvider>
 
       {showError && (
         <div className="fixed top-5 left-5 z-10 w-full max-w-xl shadow-md">
