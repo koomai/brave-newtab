@@ -1,39 +1,34 @@
 import { useState } from "react";
-import { btn } from "./ui";
+import { Button, Input } from "@cloudflare/kumo";
 
 export function ApiKeySetup({ onSave }: { onSave: (key: string) => void }) {
   const [value, setValue] = useState("");
   const valid = value.trim().startsWith("sk-ant-");
 
   return (
-    <div style={{ maxWidth: 520, margin: "12vh auto", padding: 24, fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 24 }}>Connect your Anthropic API key</h1>
-      <p style={{ color: "#555", lineHeight: 1.6 }}>
+    <div className="mx-auto flex max-w-lg flex-col gap-4 px-6 py-24">
+      <h1 className="text-2xl font-semibold text-kumo-default">Connect your Anthropic API key</h1>
+      <p className="text-base/7 text-kumo-subtle">
         The agent runs inside this extension and talks to the Anthropic API directly. Your key
         is stored in <code>chrome.storage.local</code> on this machine and is never sent
         anywhere else.
       </p>
-      <input
+      <Input
         type="password"
+        aria-label="Anthropic API key"
+        className="w-full font-mono"
+        placeholder="sk-ant-..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="sk-ant-..."
-        style={{
-          width: "100%",
-          padding: 12,
-          fontSize: 14,
-          borderRadius: 4,
-          border: "1px solid #ddd",
-          fontFamily: "ui-monospace, monospace",
-        }}
       />
-      <button
-        style={{ ...btn, marginTop: 16, opacity: valid ? 1 : 0.5 }}
+      <Button
+        variant="primary"
+        className="self-start"
         disabled={!valid}
         onClick={() => onSave(value.trim())}
       >
         Save key
-      </button>
+      </Button>
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { Banner, Button } from "@cloudflare/kumo";
+import { ArrowsClockwiseIcon, GearSixIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
 import { DEFAULT_MODEL, type HomepageModel } from "@homepage/agent-core";
 import { DEFAULT_REBUILD_INTERVAL_HOURS } from "@/lib/auto-rebuild";
 import { BUILD_STEPS } from "@/lib/protocol";
@@ -8,7 +10,6 @@ import { ApiKeySetup } from "./components/ApiKeySetup";
 import { BuildProgress } from "./components/BuildProgress";
 import { HomepagePreview } from "./components/HomepagePreview";
 import { SettingsModal } from "./components/SettingsModal";
-import { btn, errorBox } from "./components/ui";
 import { useHomepageBuild } from "./useHomepageBuild";
 
 export default function App() {
@@ -92,7 +93,7 @@ export default function App() {
     await saveSetting("rebuildIntervalHours", next);
   }, []);
 
-  if (loading) return <div style={{ padding: 20, textAlign: "center" }}>Loading…</div>;
+  if (loading) return <div className="p-5 text-center text-kumo-subtle">Loading…</div>;
   if (!apiKey) return <ApiKeySetup onSave={saveKey} />;
 
   // With no homepage to fall back to, a running build takes over the tab.
@@ -108,23 +109,23 @@ export default function App() {
 
   if (!renderedCode) {
     return (
-      <div style={{ maxWidth: 560, margin: "14vh auto", padding: 24, fontFamily: "system-ui" }}>
-        <h1 style={{ fontSize: 26 }}>Build your homepage</h1>
-        <p style={{ color: "#555", lineHeight: 1.6 }}>
+      <div className="mx-auto flex max-w-xl flex-col gap-4 px-6 py-28">
+        <h1 className="text-2xl font-semibold text-kumo-default">Build your homepage</h1>
+        <p className="text-base/7 text-kumo-subtle">
           The agent reads your browsing history, opens the pages you actually follow, and writes a
           homepage from what it finds today.
         </p>
         {state.error && (
-          <div style={{ ...errorBox, margin: "16px 0", padding: 12, borderRadius: 4 }}>{state.error}</div>
+          <Banner variant="error" icon={<WarningCircleIcon weight="fill" />} description={state.error} />
         )}
-        <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-          <button style={btn} onClick={() => build()}>
+        <div className="flex gap-2">
+          <Button variant="primary" onClick={() => build()}>
             Build today&apos;s homepage
-          </button>
+          </Button>
           {resumable && (
-            <button style={{ ...btn, backgroundColor: "#555" }} onClick={() => build({ resume: true })}>
+            <Button variant="secondary" onClick={() => build({ resume: true })}>
               Resume interrupted build
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -134,73 +135,59 @@ export default function App() {
   const showError = state.error && dismissedError !== state.error;
 
   return (
-    <div style={{ height: "100vh", width: "100vw" }}>
-      <div style={{ position: "fixed", top: 20, right: 20, zIndex: 999, display: "flex", gap: 8 }}>
+    <div className="h-dvh w-screen">
+      <div className="fixed top-5 right-5 z-10 flex gap-2">
         {state.running ? (
           // A build is running in the background (from here, another tab, or the
           // scheduled rebuild). Let the user watch it without losing this page.
-          <button
-            style={{ ...btn, backgroundColor: "#0a7", display: "flex", alignItems: "center", gap: 8 }}
+          <Button
+            variant="primary"
+            className="shadow-md"
             onClick={() => setViewProgress(true)}
             title="View build progress"
           >
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "white",
-                animation: "hb-pulse 1.2s ease-in-out infinite",
-              }}
-            />
+            <span className="size-2 animate-pulse rounded-full bg-current" />
             Building… {Math.min(state.stepIndex + 1, BUILD_STEPS.length)}/{BUILD_STEPS.length}
-          </button>
+          </Button>
         ) : (
-          <button style={btn} onClick={() => build()} title="Rebuild now">
-            ↻ Rebuild
-          </button>
+          <Button
+            className="shadow-md"
+            icon={<ArrowsClockwiseIcon />}
+            onClick={() => build()}
+            title="Rebuild now"
+          >
+            Rebuild
+          </Button>
         )}
-        <button style={btn} onClick={() => setShowSettings(true)} title="Customize homepage">
-          ⚙️ Settings
-        </button>
+        <Button
+          className="shadow-md"
+          icon={<GearSixIcon />}
+          onClick={() => setShowSettings(true)}
+          title="Customize homepage"
+        >
+          Settings
+        </Button>
       </div>
 
       {showError && (
-        <div
-          style={{
-            ...errorBox,
-            position: "fixed",
-            top: 20,
-            left: 20,
-            right: 260,
-            zIndex: 999,
-            padding: "10px 14px",
-            borderRadius: 6,
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 12,
-          }}
-        >
-          <span style={{ flex: 1 }}>
-            <b>Build failed.</b> {state.error}
-          </span>
-          <button style={{ ...btn, padding: "4px 10px", backgroundColor: "#a02620" }} onClick={() => build()}>
-            Retry
-          </button>
-          <button
-            onClick={() => setDismissedError(state.error)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#a02620",
-              cursor: "pointer",
-              fontSize: 16,
-              lineHeight: 1,
-            }}
-            title="Dismiss"
-          >
-            ✕
-          </button>
+        <div className="fixed top-5 left-5 z-10 w-full max-w-xl shadow-md">
+          <Banner
+            variant="error"
+            icon={<WarningCircleIcon weight="fill" />}
+            title="Build failed"
+            description={state.error}
+            action={
+              <>
+                <Banner.Action onClick={() => build()}>Retry</Banner.Action>
+                <Banner.Action
+                  variant="ghost"
+                  icon={<XIcon />}
+                  aria-label="Dismiss"
+                  onClick={() => setDismissedError(state.error)}
+                />
+              </>
+            }
+          />
         </div>
       )}
 
