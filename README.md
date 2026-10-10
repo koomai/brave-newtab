@@ -73,7 +73,8 @@ over the agent's own defaults. This box sets both the content and the look:
 | *"Green-on-black terminal, monospace, like a 1980s BBS."* | Exactly that |
 | *"Skip sports and politics. Always show the weather and my next three calendar events."* | Your rules, every day |
 
-Click **Save & rebuild** to apply them right away.
+Click **Save & rebuild** to apply them right away, or **Save** to keep them for
+the next build without starting one now.
 
 **Model.** Choose which Claude model writes your page:
 

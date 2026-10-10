@@ -63,15 +63,19 @@ export default function App() {
     setApiKey(key);
   }, []);
 
-  const savePrompt = useCallback(
+  const savePrompt = useCallback(async (prompt: string) => {
+    await saveSetting("systemPrompt", prompt);
+    setSystemPrompt(prompt);
+    setShowSettings(false);
+  }, []);
+
+  const savePromptAndRebuild = useCallback(
     async (prompt: string) => {
-      await saveSetting("systemPrompt", prompt);
-      setSystemPrompt(prompt);
-      setShowSettings(false);
+      await savePrompt(prompt);
       setRenderedCode(null);
       build();
     },
-    [build],
+    [savePrompt, build],
   );
 
   // These persist immediately; the worker reads them on its next heartbeat or build.
@@ -213,6 +217,7 @@ export default function App() {
           onChangeInterval={changeInterval}
           onClose={() => setShowSettings(false)}
           onSave={savePrompt}
+          onSaveAndRebuild={savePromptAndRebuild}
         />
       )}
     </div>

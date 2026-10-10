@@ -13,6 +13,7 @@ export function SettingsModal({
   onChangeInterval,
   onClose,
   onSave,
+  onSaveAndRebuild,
 }: {
   initialPrompt: string;
   model: HomepageModel;
@@ -23,6 +24,7 @@ export function SettingsModal({
   onChangeInterval: (next: number) => void;
   onClose: () => void;
   onSave: (prompt: string) => void;
+  onSaveAndRebuild: (prompt: string) => void;
 }) {
   const [draft, setDraft] = useState(initialPrompt);
 
@@ -126,7 +128,14 @@ export function SettingsModal({
           >
             Cancel
           </button>
-          <button onClick={() => onSave(draft)} style={btn}>
+          <button
+            onClick={() => onSave(draft)}
+            style={{ ...btn, backgroundColor: "white", color: "#0066cc", border: "1px solid #0066cc" }}
+            title="Keep these instructions for the next build"
+          >
+            Save
+          </button>
+          <button onClick={() => onSaveAndRebuild(draft)} style={btn}>
             Save &amp; rebuild
           </button>
         </div>
